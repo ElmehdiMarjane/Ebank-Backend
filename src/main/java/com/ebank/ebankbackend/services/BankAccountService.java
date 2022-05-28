@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface BankAccountService {
     Client saveClient(Client client);
-    Account saveAccount(double initialBalance, String type, Long clientID);
+    Account saveCurrentAccount(double initialBalance,double overDraft, Long clientID);
+    Account saveSavingAccount(double initialBalance,double interestRate, Long clientID);
     List<Client> CLIENT_LIST();
     Account getBankAccount(String accountId);
     void debit(String accountId,double amount);

@@ -1,7 +1,10 @@
 package com.ebank.ebankbackend.services;
 
+import com.ebank.ebankbackend.Enums.AccountStatus;
 import com.ebank.ebankbackend.entities.Account;
 import com.ebank.ebankbackend.entities.Client;
+import com.ebank.ebankbackend.entities.CurrentAccount;
+import com.ebank.ebankbackend.entities.SavingAccount;
 import com.ebank.ebankbackend.repositories.AccountRepository;
 import com.ebank.ebankbackend.repositories.ClientRepository;
 import com.ebank.ebankbackend.repositories.OperationRepository;
@@ -11,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -26,14 +31,50 @@ public class BankAccountServiceImpl implements BankAccountService{
 
     @Override
     public Client saveClient(Client client) {
+        Client nclient= clientRepository.save(client);
         log.info("Saving Client");
-        return null;
+        return nclient;
     }
 
     @Override
-    public Account saveAccount(double initialBalance, String type, Long clientID) {
-        return null;
+    public Account saveCurrentAccount(double initialBalance, double overDraft, Long clientID) {
+
+        CurrentAccount account=new CurrentAccount();
+        Client client=clientRepository.findById(clientID).orElse(null);
+        if (client==null)
+            throw new RuntimeException("Client not found");
+
+
+        account.setId(UUID.randomUUID().toString());
+        account.setBalance(Math.round(Math.random()*90000));
+        account.setCreatedAt(new Date());
+        account.setStatus(AccountStatus.Created);
+        account.setClient(client);
+        account.setOverDraft(overDraft);
+        CurrentAccount savedCurrentAccount=accountRepository.save(account);
+
+        return savedCurrentAccount;
     }
+
+    @Override
+    public Account saveSavingAccount(double initialBalance, double interestRate, Long clientID) {
+        SavingAccount account=new SavingAccount();
+        Client client=clientRepository.findById(clientID).orElse(null);
+        if (client==null)
+            throw new RuntimeException("Client not found");
+
+
+        account.setId(UUID.randomUUID().toString());
+        account.setBalance(Math.round(Math.random()*90000));
+        account.setCreatedAt(new Date());
+        account.setStatus(AccountStatus.Created);
+        account.setClient(client);
+        account.setInterestRate(interestRate);
+        SavingAccount savedSavingAccount=accountRepository.save(account);
+
+        return savedSavingAccount;
+    }
+
 
     @Override
     public List<Client> CLIENT_LIST() {

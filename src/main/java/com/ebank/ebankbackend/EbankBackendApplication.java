@@ -58,7 +58,6 @@ public class EbankBackendApplication {
 
             accountRepository.findAll().forEach(account -> {
 
-
                 for(int i=0;i<5;i++){
                     Operation operation=new Operation();
                     operation.setOperationDate(new Date());
