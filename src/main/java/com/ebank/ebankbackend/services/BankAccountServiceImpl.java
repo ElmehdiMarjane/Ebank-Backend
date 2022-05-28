@@ -26,7 +26,7 @@ public class BankAccountServiceImpl implements BankAccountService{
 
     @Override
     public Client saveClient(Client client) {
-        log.info("Saving new Client");
+        log.info("Saving Client");
         return null;
     }
 
