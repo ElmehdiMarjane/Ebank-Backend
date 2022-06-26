@@ -137,4 +137,19 @@ public class BankAccountServiceImpl implements BankAccountService{
                 .orElseThrow(()->new RuntimeException("Not found"));
         return dtoMapper.fromClient(client);
     }
+
+    @Override
+    public ClientDTO updateClient(ClientDTO client) {
+        Client nclient= dtoMapper.fromClientDTO(client);
+        Client savedClient= clientRepository.save(nclient);
+        log.info("updating Client");
+        return dtoMapper.fromClient(savedClient);
+    }
+    @Override
+    public void deleteClient(Long clientId) {
+
+        clientRepository.deleteById(clientId);
+    }
+
+
 }

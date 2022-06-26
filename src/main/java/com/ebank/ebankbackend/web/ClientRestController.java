@@ -35,6 +35,15 @@ public class ClientRestController {
     }
 
 
+    @PutMapping("/Clients/{id}")
+    public ClientDTO updateClient(@PathVariable(name="id") Long clientId, @RequestBody ClientDTO clientDTO){
+        clientDTO.setId(clientId);
+        return bankAccountService.updateClient(clientDTO);
+    }
+    @DeleteMapping("/Clients/{id}")
+    public void deleteClient(@PathVariable(name="id") Long clientId){
+        bankAccountService.deleteClient(clientId);
+    }
 
 
 }

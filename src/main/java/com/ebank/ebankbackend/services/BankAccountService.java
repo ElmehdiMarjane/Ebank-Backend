@@ -20,4 +20,8 @@ public interface BankAccountService {
     void transfer(String debitedId,String creditedId,double amount);
 
     ClientDTO getClient(Long clientId) throws  RuntimeException;
+
+    ClientDTO updateClient(ClientDTO client);
+
+    void deleteClient(Long clientId);
 }
