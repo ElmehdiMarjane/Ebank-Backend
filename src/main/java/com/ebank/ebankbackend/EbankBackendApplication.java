@@ -2,6 +2,7 @@ package com.ebank.ebankbackend;
 
 import com.ebank.ebankbackend.Enums.AccountStatus;
 import com.ebank.ebankbackend.Enums.operationType;
+import com.ebank.ebankbackend.dtos.ClientDTO;
 import com.ebank.ebankbackend.entities.*;
 import com.ebank.ebankbackend.repositories.AccountRepository;
 import com.ebank.ebankbackend.repositories.ClientRepository;
@@ -30,7 +31,7 @@ public class EbankBackendApplication {
         return args -> {
 
             Stream.of("IHAAB","abdelkader","Jilali").forEach(name->{
-                Client client=new Client();
+                ClientDTO client=new ClientDTO();
                 client.setName(name);
                 client.setEmail(name+"@gmail.com");
                 bankAccountService.saveClient(client);

@@ -33,10 +33,11 @@ public class BankAccountServiceImpl implements BankAccountService{
 
 
     @Override
-    public Client saveClient(Client client) {
-        Client nclient= clientRepository.save(client);
+    public ClientDTO saveClient(ClientDTO client) {
+        Client nclient= dtoMapper.fromClientDTO(client);
+        Client savedClient= clientRepository.save(nclient);
         log.info("Saving Client");
-        return nclient;
+        return dtoMapper.fromClient(savedClient);
     }
 
     @Override
@@ -129,5 +130,11 @@ public class BankAccountServiceImpl implements BankAccountService{
         debit(debitedId,amount);
         credit(debitedId,amount);
 
+    }
+    @Override
+    public ClientDTO getClient(Long clientId) throws  RuntimeException{
+        Client client= clientRepository.findById(clientId)
+                .orElseThrow(()->new RuntimeException("Not found"));
+        return dtoMapper.fromClient(client);
     }
 }
