@@ -3,7 +3,9 @@ package com.ebank.ebankbackend.mappers;
 import com.ebank.ebankbackend.dtos.ClientDTO;
 import com.ebank.ebankbackend.entities.Client;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BankAccountMapperImpl {
 
     public ClientDTO fromClient(Client client){

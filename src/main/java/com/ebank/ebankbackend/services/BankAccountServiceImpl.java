@@ -9,8 +9,9 @@ import com.ebank.ebankbackend.repositories.AccountRepository;
 import com.ebank.ebankbackend.repositories.ClientRepository;
 import com.ebank.ebankbackend.repositories.OperationRepository;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor
@@ -28,7 +29,7 @@ public class BankAccountServiceImpl implements BankAccountService{
     private AccountRepository accountRepository;
     private OperationRepository operationRepository;
     private BankAccountMapperImpl dtoMapper;
-    Logger log=LoggerFactory.getLogger(this.getClass().getName());
+
 
 
     @Override
