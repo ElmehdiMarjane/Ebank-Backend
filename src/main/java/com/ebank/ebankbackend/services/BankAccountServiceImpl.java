@@ -1,10 +1,10 @@
 package com.ebank.ebankbackend.services;
 
 import com.ebank.ebankbackend.Enums.AccountStatus;
-import com.ebank.ebankbackend.entities.Account;
-import com.ebank.ebankbackend.entities.Client;
-import com.ebank.ebankbackend.entities.CurrentAccount;
-import com.ebank.ebankbackend.entities.SavingAccount;
+import com.ebank.ebankbackend.Enums.operationType;
+import com.ebank.ebankbackend.dtos.ClientDTO;
+import com.ebank.ebankbackend.entities.*;
+import com.ebank.ebankbackend.mappers.BankAccountMapperImpl;
 import com.ebank.ebankbackend.repositories.AccountRepository;
 import com.ebank.ebankbackend.repositories.ClientRepository;
 import com.ebank.ebankbackend.repositories.OperationRepository;
@@ -17,6 +17,7 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -26,6 +27,7 @@ public class BankAccountServiceImpl implements BankAccountService{
     private ClientRepository clientRepository;
     private AccountRepository accountRepository;
     private OperationRepository operationRepository;
+    private BankAccountMapperImpl dtoMapper;
     Logger log=LoggerFactory.getLogger(this.getClass().getName());
 
 
@@ -77,27 +79,54 @@ public class BankAccountServiceImpl implements BankAccountService{
 
 
     @Override
-    public List<Client> CLIENT_LIST() {
-        return null;
+    public List<ClientDTO> CLIENT_LIST() {
+        List <Client> clients=clientRepository.findAll();
+        return clients.stream().map(clt->dtoMapper.fromClient(clt)).collect(Collectors.toList());
+
     }
 
     @Override
     public Account getBankAccount(String accountId) {
-        return null;
+        Account account=accountRepository.findById(accountId).orElse(null);
+        if(account==null)
+            throw new RuntimeException("Account not found");
+        return account;
     }
 
     @Override
     public void debit(String accountId, double amount) {
+        Account debitedAccount=getBankAccount(accountId);
+        if(debitedAccount.getBalance()<amount)
+            throw new RuntimeException("InSufficient Balance");
+        Operation operation=new Operation();
+        operation.setType(operationType.DEBIT);
+        operation.setAmount(amount);
+        operation.setOperationDate(new Date());
+        operation.setBankAccount(debitedAccount);
+        operationRepository.save(operation);
+        debitedAccount.setBalance(debitedAccount.getBalance()-amount);
+        accountRepository.save(debitedAccount);
 
     }
 
     @Override
     public void credit(String accountId, double amount) {
+        Account creditedAccount=getBankAccount(accountId);
 
+        Operation operation=new Operation();
+        operation.setType(operationType.CREDIT);
+        operation.setAmount(amount);
+        operation.setOperationDate(new Date());
+        operation.setBankAccount(creditedAccount);
+        operationRepository.save(operation);
+        creditedAccount.setBalance(creditedAccount.getBalance()+amount);
+        accountRepository.save(creditedAccount);
     }
 
     @Override
-    public void transfer(Account debitedId, Account creditedId, double amount) {
+    public void transfer(String debitedId, String creditedId, double amount) {
+        debit(debitedId,amount);
+        credit(debitedId,amount);
 
     }
 }

@@ -6,6 +6,7 @@ import com.ebank.ebankbackend.entities.*;
 import com.ebank.ebankbackend.repositories.AccountRepository;
 import com.ebank.ebankbackend.repositories.ClientRepository;
 import com.ebank.ebankbackend.repositories.OperationRepository;
+import com.ebank.ebankbackend.services.BankAccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,7 +23,34 @@ public class EbankBackendApplication {
         SpringApplication.run(EbankBackendApplication.class, args);
     }
 
+
     @Bean
+    CommandLineRunner Test(BankAccountService bankAccountService){
+
+        return args -> {
+
+            Stream.of("IHAAB","abdelkader","Jilali").forEach(name->{
+                Client client=new Client();
+                client.setName(name);
+                client.setEmail(name+"@gmail.com");
+                bankAccountService.saveClient(client);
+            });
+            bankAccountService.CLIENT_LIST().forEach(client -> {
+
+                bankAccountService.saveCurrentAccount(Math.random()*90000,9000,client.getId());
+                bankAccountService.saveSavingAccount(Math.random()*90000,5.5,client.getId());
+            });
+        };
+
+    }
+
+
+
+
+
+
+
+
     CommandLineRunner start(ClientRepository clientRepository, AccountRepository accountRepository, OperationRepository operationRepository){
 
 
