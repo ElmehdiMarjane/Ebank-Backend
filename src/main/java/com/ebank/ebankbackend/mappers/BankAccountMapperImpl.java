@@ -39,6 +39,7 @@ public class BankAccountMapperImpl {
         return saving;
 
     }
+    //Test
     public CurrentAccountDto fromCurrentAccount(CurrentAccount currentAccount){
         CurrentAccountDto CurrentDTO=new CurrentAccountDto();
         BeanUtils.copyProperties(currentAccount,CurrentDTO);
