@@ -2,7 +2,10 @@ package com.ebank.ebankbackend.services;
 
 import com.ebank.ebankbackend.Enums.AccountStatus;
 import com.ebank.ebankbackend.Enums.operationType;
+import com.ebank.ebankbackend.dtos.AccountDto;
 import com.ebank.ebankbackend.dtos.ClientDTO;
+import com.ebank.ebankbackend.dtos.CurrentAccountDto;
+import com.ebank.ebankbackend.dtos.SavingAccountDto;
 import com.ebank.ebankbackend.entities.*;
 import com.ebank.ebankbackend.mappers.BankAccountMapperImpl;
 import com.ebank.ebankbackend.repositories.AccountRepository;
@@ -41,7 +44,7 @@ public class BankAccountServiceImpl implements BankAccountService{
     }
 
     @Override
-    public Account saveCurrentAccount(double initialBalance, double overDraft, Long clientID) {
+    public CurrentAccountDto saveCurrentAccount(double initialBalance, double overDraft, Long clientID) {
 
         CurrentAccount account=new CurrentAccount();
         Client client=clientRepository.findById(clientID).orElse(null);
@@ -57,11 +60,11 @@ public class BankAccountServiceImpl implements BankAccountService{
         account.setOverDraft(overDraft);
         CurrentAccount savedCurrentAccount=accountRepository.save(account);
 
-        return savedCurrentAccount;
+        return dtoMapper.fromCurrentAccount(savedCurrentAccount);
     }
 
     @Override
-    public Account saveSavingAccount(double initialBalance, double interestRate, Long clientID) {
+    public SavingAccountDto saveSavingAccount(double initialBalance, double interestRate, Long clientID) {
         SavingAccount account=new SavingAccount();
         Client client=clientRepository.findById(clientID).orElse(null);
         if (client==null)
@@ -76,7 +79,7 @@ public class BankAccountServiceImpl implements BankAccountService{
         account.setInterestRate(interestRate);
         SavingAccount savedSavingAccount=accountRepository.save(account);
 
-        return savedSavingAccount;
+        return dtoMapper.fromSavingAccount(savedSavingAccount) ;
     }
 
 
@@ -88,16 +91,27 @@ public class BankAccountServiceImpl implements BankAccountService{
     }
 
     @Override
-    public Account getBankAccount(String accountId) {
+    public AccountDto getBankAccount(String accountId) {
+
         Account account=accountRepository.findById(accountId).orElse(null);
         if(account==null)
             throw new RuntimeException("Account not found");
-        return account;
+        if(account instanceof SavingAccount){
+
+            return dtoMapper.fromSavingAccount((SavingAccount) account);
+        }
+        else{
+            return dtoMapper.fromCurrentAccount((CurrentAccount) account);
+        }
     }
 
     @Override
     public void debit(String accountId, double amount) {
-        Account debitedAccount=getBankAccount(accountId);
+
+
+        Account debitedAccount=accountRepository.findById(accountId).orElse(null);
+        if(debitedAccount==null)
+            throw new RuntimeException("Account not found");
         if(debitedAccount.getBalance()<amount)
             throw new RuntimeException("InSufficient Balance");
         Operation operation=new Operation();
@@ -112,8 +126,28 @@ public class BankAccountServiceImpl implements BankAccountService{
     }
 
     @Override
+    public List<AccountDto> ACCOUNT_LIST() {
+        List<Account> accountList=accountRepository.findAll();
+
+        List<AccountDto> accountDtoList;
+        accountDtoList= accountList.stream().map(acc->{
+
+            if(acc instanceof SavingAccount){
+
+                return dtoMapper.fromSavingAccount((SavingAccount) acc);
+            }
+            else{
+                return dtoMapper.fromCurrentAccount((CurrentAccount) acc);
+            }
+        }).collect(Collectors.toList());
+        return accountDtoList;
+    }
+
+    @Override
     public void credit(String accountId, double amount) {
-        Account creditedAccount=getBankAccount(accountId);
+        Account creditedAccount=accountRepository.findById(accountId).orElse(null);
+        if(creditedAccount==null)
+            throw new RuntimeException("Account not found");
 
         Operation operation=new Operation();
         operation.setType(operationType.CREDIT);

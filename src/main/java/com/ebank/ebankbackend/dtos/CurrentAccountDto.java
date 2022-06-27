@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @Data
-public class CurrentAccountDto {
+public class CurrentAccountDto extends AccountDto {
 
     private String id;
     private double balance;

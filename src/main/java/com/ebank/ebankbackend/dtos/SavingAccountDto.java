@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @Data
-public class SavingAccountDto {
+public class SavingAccountDto extends AccountDto{
 
     private String id;
     private double balance;
